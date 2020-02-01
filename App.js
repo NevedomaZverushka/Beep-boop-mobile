@@ -1,16 +1,20 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { Header, Icon } from 'react-native-elements';
+import { View } from 'react-native';
+import { createAppContainer } from 'react-navigation';
+import { createStackNavigator } from 'react-navigation-stack';
 
 import MainPage from './components/MainPage'
 import AppHeader from './components/AppHeader'
 
-export default function App() {
-  return (
-    <View style={{ flex: 1, backgroundColor: 'white' }}>
-      <AppHeader />
-      <MainPage />
-    </View>
-  );
-}
+const RootStack = createStackNavigator({
+  Home: {
+    screen: MainPage,
+    navigationOptions: {
+      header: <AppHeader />,
+    }
+  },
+});
 
+const App = createAppContainer(RootStack);
+
+export default App;

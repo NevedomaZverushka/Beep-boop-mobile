@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Image, ImageBackground, ScrollView, Dimensions } from 'react-native';
+import { StyleSheet, Text, View, Image, ImageBackground, ScrollView, Dimensions, TouchableOpacity, SafeAreaView } from 'react-native';
+
+import AppHeader from './AppHeader'
 
 const cards = [
     { img: require('../assets/audio.png'), text: 'Пошук за допомогою', span: 'запису' },
@@ -20,8 +22,8 @@ const sliders = [
 ]
 
 export default class MainPage extends Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.state = {
             selectedIndex: 0,
         }
@@ -36,74 +38,82 @@ export default class MainPage extends Component {
 
     render() {
         return(
-            <ImageBackground source={require('../assets/background.png')} style={styles.container}>
-                <ScrollView style={{ flex: 1, flexDirection: 'column' }}>
+            <View style={{ flex: 1, backgroundColor: 'white' }}>
+                <ImageBackground source={require('../assets/background.png')} style={styles.container}>
+                    <ScrollView style={{ flex: 1, flexDirection: 'column' }}>
 
-                    <View style={{ marginTop: 15, marginBottom: 10 }}>
+                        <View style={{ marginTop: 15, marginBottom: 10 }}>
 
-                        <View style={{ flex: 1, flexDirection: 'row' }}>
-                            <Text style={[ styles.title, { flex: 0.5 } ] }>Коротко про гру</Text>
-                            <View style={styles.circleDiv}>
-                                {
-                                    sliders.map( ( block, i ) => {
-                                        return(
-                                            <View key={i} style={[ styles.circle,
-                                                        { opacity:
-                                                            i === 0
-                                                                ? this.state.selectedIndex >= 0.5 ? 0.5 : 1 - this.state.selectedIndex
-                                                                : this.state.selectedIndex >= 0.5 ? this.state.selectedIndex : 0.5
-                                                        }]} />
-                                        )
-                                    })
-                                }
+                            <View style={{ flex: 1, flexDirection: 'row' }}>
+                                <Text style={[ styles.title, { flex: 0.5 } ] }>Коротко про гру</Text>
+                                <View style={styles.circleDiv}>
+                                    {
+                                        sliders.map( ( block, i ) => {
+                                            return(
+                                                <View key={i} style={[ styles.circle,
+                                                            { opacity:
+                                                                i === 0
+                                                                    ? this.state.selectedIndex >= 0.5 ? 0.5 : 1 - this.state.selectedIndex
+                                                                    : this.state.selectedIndex >= 0.5 ? this.state.selectedIndex : 0.5
+                                                            }]} />
+                                            )
+                                        })
+                                    }
+                                </View>
                             </View>
+                            
+                            <SafeAreaView>
+                                <ScrollView
+                                    horizontal={true}
+                                    showsHorizontalScrollIndicator={false}
+                                    onScroll={this.setSelectedIndex}
+                                >
+                                    {
+                                        sliders.map( ( block, i ) => {
+                                            return(
+                                                <TouchableOpacity key={i} style={styles.sliderBlock}>
+                                                    <Image source={block.img} style={styles.sliderImg} />
+                                                    <View style={{ flex: 0.5, margin: 5 }}>
+                                                        <Text style={styles.sliderTitle}>{block.title}</Text>
+                                                        <Text style={styles.sliderText}>
+                                                            {
+                                                                block.text.length > 90
+                                                                    ? ((block.text).substring(0, 90 - 3)) + '...'
+                                                                    : block.text
+                                                            }
+                                                        </Text>
+                                                    </View>
+                                                </TouchableOpacity>
+                                            )
+                                        })
+                                    }
+                                </ScrollView>
+                            </SafeAreaView>
+
                         </View>
 
-                        <ScrollView
-                            horizontal={true}
-                            showsHorizontalScrollIndicator={false}
-                            onScroll={this.setSelectedIndex}
-                        >
-                            {
-                                sliders.map( ( block, i ) => {
-                                    return(
-                                        <View key={i} style={styles.sliderBlock}>
-                                            <Image source={block.img} style={styles.sliderImg} />
-                                            <View style={{ flex: 0.5, margin: 5 }}>
-                                                <Text style={styles.sliderTitle}>{block.title}</Text>
-                                                <Text style={styles.sliderText}>
-                                                    {
-                                                        block.text.length > 90 ? ((block.text).substring(0, 90 - 3)) + '...' : block.text
-                                                    }
-                                                </Text>
-                                            </View>
-                                        </View>
-                                    )
-                                })
-                            }
-                        </ScrollView>
+                        <View style={{ marginTop: 10, marginBottom: 10 }}>
+                            <Text style={styles.title}>Починай грати вже зараз</Text>
+                            <SafeAreaView>
+                                <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+                                    {
+                                        cards.map( ( card, i ) => {
+                                            return (
+                                                <View key={i} style={styles.card}>
+                                                    <Image source={card.img} style={styles.img} />
+                                                    <Text style={styles.textCard}>{card.text}</Text>
+                                                    <Text style={styles.span}>{card.span}</Text>
+                                                </View>
+                                            )
+                                        })
+                                    }
+                                </ScrollView>
+                            </SafeAreaView>
+                        </View>
 
-                    </View>
-
-                    <View style={{ marginTop: 10, marginBottom: 10 }}>
-                        <Text style={styles.title}>Починай грати вже зараз</Text>
-                        <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-                            {
-                                cards.map( ( card, i ) => {
-                                    return (
-                                        <View key={i} style={styles.card}>
-                                            <Image source={card.img} style={styles.img} />
-                                            <Text style={styles.textCard}>{card.text}</Text>
-                                            <Text style={styles.span}>{card.span}</Text>
-                                        </View>
-                                    )
-                                })
-                            }
-                        </ScrollView>
-                    </View>
-
-                </ScrollView>
-            </ImageBackground>
+                    </ScrollView>
+                </ImageBackground>
+            </View>
         )
     }
 }
