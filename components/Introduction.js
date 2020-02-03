@@ -32,20 +32,22 @@ export default function Introduction(props) {
                         </Text>
 
                         <Text style={styles.title}>Коротко про правила гри:</Text>
-                        <FlatList
-                            style={styles.list}
-                            keyExtractor={item => item.id.toString()}
-                            data={rules}
-                            renderItem={
-                                ({ item }) =>
-                                    <View style={{ flex: 1, flexDirection: 'row' }}>
-                                        <Text style={{ fontSize: 15, }}>
-                                            <Text style={{ fontWeight: 'bold', color: '#ff6666' }}>{item.id}. </Text>
-                                            {item.text}
-                                        </Text>
-                                    </View>
-                            }
-                        />
+                        <SafeAreaView style={{ flex: 1 }}>
+                            <FlatList
+                                style={styles.list}
+                                keyExtractor={item => item.id.toString()}
+                                data={rules}
+                                renderItem={
+                                    ({ item }) =>
+                                        <View style={{ flex: 1, flexDirection: 'row' }}>
+                                            <Text style={{ fontSize: 15, }}>
+                                                <Text style={{ fontWeight: 'bold', color: '#ff6666' }}>{item.id}. </Text>
+                                                {item.text}
+                                            </Text>
+                                        </View>
+                                }
+                            />
+                        </SafeAreaView>
                     </View>
 
                 </ScrollView>

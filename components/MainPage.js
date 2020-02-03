@@ -3,8 +3,8 @@ import { StyleSheet, Text, View, Image, ImageBackground, ScrollView, Dimensions,
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 
 const cards = [
-    { img: require('../assets/audio.png'), text: 'Пошук за допомогою', span: 'запису' },
-    { img: require('../assets/text.png'), text: 'Пошук за допомогою', span: 'тексту' }
+    { img: require('../assets/audio.png'), text: 'Пошук за допомогою', span: 'запису', link: 'audioSearch' },
+    { img: require('../assets/text.png'), text: 'Пошук за допомогою', span: 'тексту', link: 'textSearch' }
 ]
 const sliders = [
     {
@@ -14,7 +14,7 @@ const sliders = [
         text: "BEEP-BOOP - це музичний акінатор, тобто гра, в якiй комп'ютер повинен вiдгадати пiсню, що ви загадали, і до того ж надасть вам можливість прослухати та насолодитись нею."
     },
     {
-        link: 'home',
+        link: 'history',
         img: require('../assets/history.png'),
         title: "Історія ігор",
         text: "some text"
@@ -105,11 +105,16 @@ export default class MainPage extends Component {
                                     {
                                         cards.map( ( card, i ) => {
                                             return (
-                                                <View key={i} style={styles.card}>
-                                                    <Image source={card.img} style={styles.img} />
-                                                    <Text style={styles.textCard}>{card.text}</Text>
-                                                    <Text style={styles.span}>{card.span}</Text>
-                                                </View>
+                                                <TouchableWithoutFeedback
+                                                    key={i}
+                                                    onPress={() => this.props.navigation.navigate(card.link)}
+                                                >
+                                                    <View style={styles.card}>
+                                                        <Image source={card.img} style={styles.img} />
+                                                        <Text style={styles.textCard}>{card.text}</Text>
+                                                        <Text style={styles.span}>{card.span}</Text>
+                                                    </View>
+                                                </TouchableWithoutFeedback>
                                             )
                                         })
                                     }

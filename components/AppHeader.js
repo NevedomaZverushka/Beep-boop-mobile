@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Button, TouchableWithoutFeedback } from 'react-native';
+import { StyleSheet, Text, TouchableWithoutFeedback } from 'react-native';
 import { Header } from 'react-native-elements';
 
 export default class AppHeader extends Component {
@@ -11,12 +11,25 @@ export default class AppHeader extends Component {
             <Header
                 leftComponent={
                     <TouchableWithoutFeedback onPress={() => this.props.navigation.navigate(this.props.btnBack)}>
-                        <Text style={ [styles.arrow, !this.props.btnBack && { width: 0, height: 0, } ]}>&#8592;</Text>
+                        <Text
+                            style={[
+                                styles.arrow,
+                                { color: 'white' },
+                                !this.props.btnBack && { width: 0, height: 0, },
+                                this.props.cards && { color: '#ff6666'}
+                            ]}
+                        >
+                            &#8592;
+                        </Text>
                     </TouchableWithoutFeedback>
                 }  
-                centerComponent={ <Text style={styles.title}>{this.props.title}</Text> }
+                centerComponent={
+                    <Text style={ [styles.title, { color: this.props.cards ? '#ff6666' : 'white' } ]}>
+                        {this.props.title}
+                    </Text>
+                }
                 containerStyle={{
-                    backgroundColor: '#ffc7bb',
+                    backgroundColor: this.props.cards ? 'white' : '#ffc7bb',
                     paddingBottom: 25,
                     shadowColor: "#000",
                     shadowOffset: {
@@ -39,15 +52,13 @@ const styles = StyleSheet.create({
     arrow: {
         paddingTop: 15,
         fontWeight: 'bold',
-        color: 'white',
         fontSize: 35,
     },
     title: {
-        justifyContent: "center",
+        justifyContent: "flex-start",
         paddingTop: 20,
         fontSize: 25,
         fontWeight: "bold",
-        color: 'white',
         textAlign: "center",
     },
 })
