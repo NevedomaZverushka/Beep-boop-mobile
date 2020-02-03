@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Image, ImageBackground, ScrollView, Dimensions, TouchableOpacity, SafeAreaView } from 'react-native';
-
-import AppHeader from './AppHeader'
+import { StyleSheet, Text, View, Image, ImageBackground, ScrollView, Dimensions, SafeAreaView } from 'react-native';
+import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 
 const cards = [
     { img: require('../assets/audio.png'), text: 'Пошук за допомогою', span: 'запису' },
@@ -9,11 +8,13 @@ const cards = [
 ]
 const sliders = [
     {
+        link: 'introduction',
         img: require('../assets/introduction.png'),
         title: "Що таке Beep-boop?",
         text: "BEEP-BOOP - це музичний акінатор, тобто гра, в якiй комп'ютер повинен вiдгадати пiсню, що ви загадали, і до того ж надасть вам можливість прослухати та насолодитись нею."
     },
     {
+        link: 'home',
         img: require('../assets/history.png'),
         title: "Історія ігор",
         text: "some text"
@@ -42,7 +43,7 @@ export default class MainPage extends Component {
                 <ImageBackground source={require('../assets/background.png')} style={styles.container}>
                     <ScrollView style={{ flex: 1, flexDirection: 'column' }}>
 
-                        <View style={{ marginTop: 15, marginBottom: 10 }}>
+                        <View style={{ marginTop: 25, marginBottom: 10 }}>
 
                             <View style={{ flex: 1, flexDirection: 'row' }}>
                                 <Text style={[ styles.title, { flex: 0.5 } ] }>Коротко про гру</Text>
@@ -71,19 +72,24 @@ export default class MainPage extends Component {
                                     {
                                         sliders.map( ( block, i ) => {
                                             return(
-                                                <TouchableOpacity key={i} style={styles.sliderBlock}>
-                                                    <Image source={block.img} style={styles.sliderImg} />
-                                                    <View style={{ flex: 0.5, margin: 5 }}>
-                                                        <Text style={styles.sliderTitle}>{block.title}</Text>
-                                                        <Text style={styles.sliderText}>
-                                                            {
-                                                                block.text.length > 90
-                                                                    ? ((block.text).substring(0, 90 - 3)) + '...'
-                                                                    : block.text
-                                                            }
-                                                        </Text>
+                                                <TouchableWithoutFeedback
+                                                    key={i}
+                                                    onPress={() => this.props.navigation.navigate(block.link)}
+                                                >
+                                                    <View style={styles.sliderBlock}>
+                                                        <Image source={block.img} style={styles.sliderImg} />
+                                                        <View style={{ flex: 0.5, margin: 5 }}>
+                                                            <Text style={styles.sliderTitle}>{block.title}</Text>
+                                                            <Text style={styles.sliderText}>
+                                                                {
+                                                                    block.text.length > 90
+                                                                        ? ((block.text).substring(0, 90 - 3)) + '...'
+                                                                        : block.text
+                                                                }
+                                                            </Text>
+                                                        </View>
                                                     </View>
-                                                </TouchableOpacity>
+                                                </TouchableWithoutFeedback>
                                             )
                                         })
                                     }
