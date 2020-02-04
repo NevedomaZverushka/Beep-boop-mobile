@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 import { StyleSheet, Text, View, Image, TextInput, ScrollView, Dimensions, TouchableWithoutFeedback, KeyboardAvoidingView } from 'react-native';
+import { connect } from 'react-redux';
 
-export default class TextSearch extends Component {
+class TextSearch extends Component {
     constructor(props) {
         super(props);
     }
+
     render() {
         return (
             <View style={{ flex: 1, backgroundColor: 'white' }}>
@@ -19,9 +21,10 @@ export default class TextSearch extends Component {
                                 editable multiline={true}
                                 numberOfLines={4}
                                 placeholder="I'm blue da ba dee da ba daa..."
+                                onChangeText={(e) => this.props.updateText(e) }
                             />
                             <TouchableWithoutFeedback onPress={() => alert('hello')}>
-                                <Text style={styles.btn}>Надіслати</Text>
+                                <Text style={styles.btnBlue}>Надіслати</Text>
                             </TouchableWithoutFeedback>
                         </View>
                     </ScrollView>
@@ -77,7 +80,8 @@ const styles = StyleSheet.create({
         textAlignVertical: 'top',
         fontSize: 20,
     },
-    btn: {
+    btnBlue: {
+        fontWeight: 'bold',
         fontSize: 18,
         color: '#5a78ed',
         margin: 10,
@@ -86,3 +90,17 @@ const styles = StyleSheet.create({
         padding: 10,
     }
 })
+
+function mapDispatchToProps(dispatch) {
+    return {
+        updateText: (text) => dispatch({ type: 'UPDATE_TEXT', text: text }),
+    }
+}
+
+function mapStateToProps(state) {
+    return {
+        text: state.text,
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(TextSearch)

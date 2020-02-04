@@ -1,6 +1,8 @@
 import React from 'react';
 import { createAppContainer } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
+import { createStore } from 'redux';
+import { Provider } from 'react-redux';
 
 import MainPage from './components/MainPage'
 import AppHeader from './components/AppHeader'
@@ -8,6 +10,32 @@ import Introduction from './components/Introduction';
 import History from './components/History';
 import AudioSearch from './components/AudioSearch';
 import TextSearch from './components/TextSearch';
+
+const initState = {
+  file: null,
+  text: ""
+}
+
+const reducer = (state = initState, action) => {
+  switch (action.type) {
+      case 'UPDATE_FILE': {
+          return {
+              ...state,
+              file: action.file
+          }
+      }
+      case 'UPDATE_TEXT': {
+          return {
+              ...state,
+              text: action.text
+          }
+      }
+      default: {
+          return state
+      }
+  }
+}
+const store = createStore(reducer);
 
 const RootStack = createStackNavigator({
   home: {
@@ -44,4 +72,7 @@ const RootStack = createStackNavigator({
 
 const App = createAppContainer(RootStack);
 
-export default App;
+export default () =>
+    <Provider store={store}>
+        <App />
+    </Provider>
