@@ -2,12 +2,15 @@ import React, { Component } from 'react';
 import { StyleSheet, Text, View, Image, TouchableWithoutFeedback, ScrollView, Dimensions, PermissionsAndroid } from 'react-native';
 import * as DocumentPicker from 'expo-document-picker';
 import { connect } from 'react-redux';
+import { Audio } from 'expo-av';
+
+const soundObject = new Audio.Sound();
 
 class AudioSearch extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            file: null,
+            playing: false,
         }
     }
 
@@ -16,12 +19,35 @@ class AudioSearch extends Component {
             const res = await DocumentPicker.getDocumentAsync({
                 type: "audio/*",
             });
-            this.props.updateFile(res.uri);
-            console.log(res);           
+            if (res.type === "cancel") {
+                this.props.updateFile(null);
+            }
+            else {
+                this.props.updateFile(res);
+                await soundObject.loadAsync(this.props.file);
+            }
         }
         catch (err) {
             console.log(err);
-        } 
+        }
+    }
+    async onPlay() {
+        try {
+            await soundObject.playAsync();
+            this.setState({ playing: true })
+        }
+        catch (err) {
+            console.log(err);
+        }
+    }
+    async onPause() {
+        try {
+            await soundObject.pauseAsync();
+            this.setState({ playing: false })
+        }
+        catch (err) {
+            console.log(err);
+        }
     }
 
     render() {
@@ -33,7 +59,10 @@ class AudioSearch extends Component {
                         <Image source={require('../assets/audio.png')} style={styles.img} />
                         <Text style={styles.title}>Пошук за допомогою <Text style={styles.span}>запису</Text></Text>
 
-                        <View style={{ flex: 1, flexDirection: 'row', marginBottom: 10 }}>
+                        <View style={[
+                            this.props.file !== null && { width: 0, height: 0 },
+                            { flex: 1, flexDirection: 'row', marginBottom: 10 }
+                        ]}>
                             <View style={[styles.slide, { flex: 0.5 }]}>
                                 <Text style={styles.paragraph}>Завантаж файл:</Text>
                                 <TouchableWithoutFeedback onPress={this.handleFile.bind(this)}>
@@ -48,8 +77,40 @@ class AudioSearch extends Component {
                             </View>
                         </View>
 
+                        <View style={[this.props.file === null && { width: 0, height: 0 }, { flex: 1, flexDirection: 'row' }]} >
+                            {
+                                this.state.playing
+                                ?
+                                    <TouchableWithoutFeedback onPress={this.onPause.bind(this)} style={{ flex: 0.1 }}>
+                                        <Text style={{ padding: 1, color: '#ff6666', fontSize: 20, fontWeight: 'bold', textAlignVertical: 'center' }}>
+                                        &#124;  &#124;
+                                        </Text>
+                                    </TouchableWithoutFeedback>
+                                :
+                                    <TouchableWithoutFeedback onPress={this.onPlay.bind(this)} style={{ flex: 0.1 }}>
+                                        <Text style={{ color: '#ff6666', fontSize: 39, textAlignVertical: 'center' }}>
+                                            &#9655;
+                                        </Text>
+                                    </TouchableWithoutFeedback>
+                            }
+                            <Text style={{ fontSize: 20, textAlignVertical: 'center', flex: 0.8, textAlign: 'center' }}>
+                                {this.props.file ? this.props.file.name : null}
+                            </Text>
+                            <TouchableWithoutFeedback
+                                onPress={() => {
+                                    this.props.updateFile(null);
+                                    soundObject.unloadAsync();
+                                }}
+                                style={{ flex: 0.1 }}
+                            >
+                                <Text style={{ color: '#ff6666', fontSize: 40, textAlignVertical: 'center' }}>
+                                    &#10005;
+                                </Text>
+                            </TouchableWithoutFeedback>
+                        </View>
+
                         <TouchableWithoutFeedback onPress={() => alert('hello')}>
-                                <Text style={styles.btnBlue}>Надіслати</Text>
+                            <Text style={styles.btnBlue}>Надіслати</Text>
                         </TouchableWithoutFeedback>
                     </View>
 
