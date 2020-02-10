@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text, View, Image, TouchableWithoutFeedback, ImageBackground, ScrollView } from 'react-native';
+import { Text, View, Image, TouchableOpacity, ImageBackground, ScrollView } from 'react-native';
 
 import styles from './Styles/HistoryStyle'
 
@@ -16,12 +16,12 @@ import styles from './Styles/HistoryStyle'
                         <Text style={styles.emptyHistory}>Здається, у вас ще не було проведено жодної гри!</Text>
                         <Text style={styles.title}>Почати гру вже зараз!</Text>
                         <View style={{ margin: 15 }}>
-                            <TouchableWithoutFeedback onPress={() => props.navigation.navigate('audioSearch')}>
+                            <TouchableOpacity onPress={() => props.navigation.navigate('audioSearch')}>
                                 <Text style={styles.btnRed}>За допомогою запису</Text>
-                            </TouchableWithoutFeedback>
-                            <TouchableWithoutFeedback onPress={() => props.navigation.navigate('textSearch')}>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={() => props.navigation.navigate('textSearch')}>
                                 <Text style={styles.btnRed}>За допомогою тексту</Text>
-                            </TouchableWithoutFeedback>
+                            </TouchableOpacity>
                         </View>
                     </View>
 

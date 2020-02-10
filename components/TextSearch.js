@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
-import { Text, View, Image, TextInput, ScrollView, TouchableWithoutFeedback, KeyboardAvoidingView, Modal } from 'react-native';
+import { Text, View, Image, TextInput, ScrollView, TouchableOpacity, KeyboardAvoidingView, Modal } from 'react-native';
 import { connect } from 'react-redux';
 import AnimatedLoader from "react-native-animated-loader";
+import Toast from 'react-native-simple-toast';
 
 import api from '../api'
 import RecognitiomResponse from './RecognitionResponse';
-import styles from './Styles/TextSearchStyle'
+import styles from './Styles/TextSearchStyle';
 
 class TextSearch extends Component {
     constructor(props) {
@@ -35,7 +36,7 @@ class TextSearch extends Component {
                     }
                 })
                 .catch((error) => {
-                    console.log(error);
+                    Toast.show('Здається, сталася помилка. Спробуйте ще раз!', Toast.LONG);
                 });
         }
     }
@@ -56,9 +57,9 @@ class TextSearch extends Component {
                                 placeholder="I'm blue da ba dee da ba daa..."
                                 onChangeText={(e) => this.props.updateText(e) }
                             />
-                            <TouchableWithoutFeedback onPress={this.sendText}>
+                            <TouchableOpacity onPress={this.sendText}>
                                 <Text style={styles.btnBlue}>Надіслати</Text>
-                            </TouchableWithoutFeedback>
+                            </TouchableOpacity>
                         </View>
                     </ScrollView>
                 </KeyboardAvoidingView>

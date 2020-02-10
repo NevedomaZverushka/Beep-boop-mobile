@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
-import { Text, View, Image, TouchableWithoutFeedback, ScrollView } from 'react-native';
+import { Text, View, Image, TouchableOpacity, ScrollView } from 'react-native';
 import * as DocumentPicker from 'expo-document-picker';
 import { connect } from 'react-redux';
 import { Audio } from 'expo-av';
 import * as Permissions from 'expo-permissions';
 import * as FileSystem from 'expo-file-system';
 import AnimatedLoader from "react-native-animated-loader";
+import Toast from 'react-native-simple-toast';
 
 import api from '../api'
 import styles from './Styles/AudioSearchStyle'
@@ -56,15 +57,6 @@ class AudioSearch extends Component {
             this.setState({ record: true })
             await recording.prepareToRecordAsync(Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY);
             await recording.startAsync();
-            setInterval(function() {
-                console.log('here')
-                if (styles.btnStop.opacity == 1) {
-                    styles.btnStop.opacity = 0.5
-                }
-                else {
-                    styles.btnStop.opacity = 1
-                }
-            }, 2000)
             setTimeout(function() {
                 this.stopRecording();
             }.bind(this), 20000);
@@ -99,10 +91,13 @@ class AudioSearch extends Component {
                     this.props.updateFile(res);
                     await soundObject.loadAsync(this.props.file);
                 }
+                else {
+                    Toast.show('Занадто великий розмір файлу!', Toast.LONG);
+                }
             }
         }
         catch (err) {
-            console.log(err);
+            Toast.show('Сталася помилка. Спробуйте ще раз!', Toast.LONG);
         }
     }
     async onPlay() {
@@ -162,9 +157,9 @@ class AudioSearch extends Component {
                         ]}>
                             <View style={[styles.slide, { flex: 0.5 }]}>
                                 <Text style={styles.paragraph}>Завантаж файл:</Text>
-                                <TouchableWithoutFeedback onPress={this.handleFile}>
+                                <TouchableOpacity onPress={this.handleFile}>
                                     <Text style={styles.btnRed}>Завантажити</Text>
-                                </TouchableWithoutFeedback>
+                                </TouchableOpacity>
                             </View>
                             <View style={[styles.slide, { flex: 0.5 }]}>
                                 <Text style={styles.paragraph}>Зроби аудіозапис:</Text>
@@ -172,13 +167,13 @@ class AudioSearch extends Component {
                                     {
                                         this.state.record
                                         ? 
-                                            <TouchableWithoutFeedback onPress={this.stopRecording} style={{ flex: 1 }}>
+                                            <TouchableOpacity onPress={this.stopRecording} style={{ flex: 1 }}>
                                                 <Text style={styles.btnStop}>Стоп</Text>
-                                            </TouchableWithoutFeedback>
+                                            </TouchableOpacity>
                                         :
-                                            <TouchableWithoutFeedback onPress={this.togglePermission} style={{ flex: 1 }}>
+                                            <TouchableOpacity onPress={this.togglePermission} style={{ flex: 1 }}>
                                                 <Text style={styles.btnRed}>Почати запис</Text>
-                                            </TouchableWithoutFeedback>
+                                            </TouchableOpacity>
                                     }
                                 </View>
                             </View>
@@ -188,22 +183,22 @@ class AudioSearch extends Component {
                             {
                                 this.state.playing
                                 ?
-                                    <TouchableWithoutFeedback onPress={this.onPause} style={{ flex: 0.1 }}>
+                                    <TouchableOpacity onPress={this.onPause} style={{ flex: 0.1 }}>
                                         <Text style={{ padding: 1, color: '#ff6666', fontSize: 20, fontWeight: 'bold', textAlignVertical: 'center' }}>
                                         &#124;  &#124;
                                         </Text>
-                                    </TouchableWithoutFeedback>
+                                    </TouchableOpacity>
                                 :
-                                    <TouchableWithoutFeedback onPress={this.onPlay} style={{ flex: 0.1 }}>
+                                    <TouchableOpacity onPress={this.onPlay} style={{ flex: 0.1 }}>
                                         <Text style={{ color: '#ff6666', fontSize: 39, textAlignVertical: 'center' }}>
                                             &#9655;
                                         </Text>
-                                    </TouchableWithoutFeedback>
+                                    </TouchableOpacity>
                             }
                             <Text style={{ fontSize: 20, textAlignVertical: 'center', flex: 0.8, textAlign: 'center' }}>
                                 { this.props.file ? this.props.file.name ? this.props.file.name : "Голосовий запис" : null }
                             </Text>
-                            <TouchableWithoutFeedback
+                            <TouchableOpacity
                                 onPress={() => {
                                     this.props.updateFile(null);
                                     soundObject.unloadAsync();
@@ -214,12 +209,12 @@ class AudioSearch extends Component {
                                 <Text style={{ color: '#ff6666', fontSize: 40, textAlignVertical: 'center' }}>
                                     &#10005;
                                 </Text>
-                            </TouchableWithoutFeedback>
+                            </TouchableOpacity>
                         </View>
 
-                        <TouchableWithoutFeedback onPress={this.sendAudio}>
+                        <TouchableOpacity onPress={this.sendAudio}>
                             <Text style={styles.btnBlue}>Надіслати</Text>
-                        </TouchableWithoutFeedback>
+                        </TouchableOpacity>
                     </View>
 
                 </ScrollView>
