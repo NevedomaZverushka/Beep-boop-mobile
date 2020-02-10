@@ -1,4 +1,5 @@
 import React from 'react';
+import { AsyncStorage } from 'react-native'
 import { createAppContainer } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
 import { createStore } from 'redux';
@@ -11,9 +12,18 @@ import History from './components/History';
 import AudioSearch from './components/AudioSearch';
 import TextSearch from './components/TextSearch';
 
+async function getDataFromStorage() {
+  const storage = await AsyncStorage.getItem('attempts');
+  return storage;
+}
+
 const initState = {
   file: null,
-  text: ""
+  text: "",
+  possibleSong: null,
+  userWon: false,
+  computerWon: false,
+  attempts: getDataFromStorage() ? [] : getDataFromStorage(),
 }
 
 const reducer = (state = initState, action) => {
@@ -30,6 +40,33 @@ const reducer = (state = initState, action) => {
               text: action.text
           }
       }
+      case 'UPDATE_SONG': {
+        return {
+            ...state,
+            possibleSong: action.song
+        }
+      }
+      case 'WRONG_ANSWER': {
+        let temp = [...state.attempts]
+        temp.push(action.song);
+        return {
+            ...state,
+            attempts: temp,
+            possibleSong: null,
+            userWon: temp.length >= 5 ? true : false,
+        }
+    }
+    case 'RIGHT_ANSWER': {
+        let temp = [...state.attempts]
+        temp.push(action.song);
+        return {
+            ...state,
+            game: false,
+            attempts: temp,
+            possibleSong: null,
+            computerWon: true
+        }
+    }
       default: {
           return state
       }

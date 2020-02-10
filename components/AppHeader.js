@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { StyleSheet, Text, TouchableWithoutFeedback } from 'react-native';
 import { Header } from 'react-native-elements';
 
+import styles from './Styles/AppHeaderStyle';
+
 export default class AppHeader extends Component {
     constructor(props) {
         super(props);
@@ -47,18 +49,3 @@ export default class AppHeader extends Component {
         )
     }
 }
-
-const styles = StyleSheet.create({
-    arrow: {
-        paddingTop: 15,
-        fontWeight: 'bold',
-        fontSize: 35,
-    },
-    title: {
-        justifyContent: "flex-start",
-        paddingTop: 20,
-        fontSize: 25,
-        fontWeight: "bold",
-        textAlign: "center",
-    },
-})
