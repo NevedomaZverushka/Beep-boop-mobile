@@ -6,6 +6,7 @@ import { Audio } from 'expo-av';
 import * as Permissions from 'expo-permissions';
 import * as FileSystem from 'expo-file-system';
 
+import api from '../api'
 import styles from './Styles/AudioSearchStyle'
 
 var soundObject = new Audio.Sound();
@@ -25,7 +26,8 @@ class AudioSearch extends Component {
         this.handleFile = this.handleFile.bind(this);
         this.togglePermission = this.togglePermission.bind(this);
         this.onPause = this.onPause.bind(this);
-        this.onPlay = this.onPlay.bind(this)
+        this.onPlay = this.onPlay.bind(this);
+        this.sendAudio = this.sendAudio.bind(this);
     }
 
     async componentWillUnmount() {
@@ -53,7 +55,18 @@ class AudioSearch extends Component {
             this.setState({ record: true })
             await recording.prepareToRecordAsync(Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY);
             await recording.startAsync();
-            setTimeout(function() { this.stopRecording(); }.bind(this), 20000);
+            setInterval(function() {
+                console.log('here')
+                if (styles.btnStop.opacity == 1) {
+                    styles.btnStop.opacity = 0.5
+                }
+                else {
+                    styles.btnStop.opacity = 1
+                }
+            }, 2000)
+            setTimeout(function() {
+                this.stopRecording();
+            }.bind(this), 20000);
         }
         catch (error) {
             console.log(error)
@@ -95,6 +108,12 @@ class AudioSearch extends Component {
         try {
             await soundObject.playAsync();
             this.setState({ playing: true })
+            var status = await soundObject.getStatusAsync();
+            while(status.isPlaying != false) {
+                status = await soundObject.getStatusAsync();
+            }
+            this.onPause();
+            await soundObject.setPositionAsync(0);
         }
         catch (err) {
             console.log(err);
@@ -108,6 +127,22 @@ class AudioSearch extends Component {
         catch (err) {
             console.log(err);
         }
+    }
+    sendAudio() {
+        if (!this.props.file) {
+            return;
+        }
+        var file = this.props.file
+        var formData = new FormData();
+        formData.append("file", file);
+        api.sendAudio(formData)
+            .then((response) => {
+                if (response.status === 200 && response.data.status === "success") {
+                    let generalized = api.generalizeResponse(response.data)
+                    this.props.updateSong(generalized.result && generalized.result.length > 0 ? generalized.result[0] : false)
+                    this.props.toggleSpinner();
+                }
+            })
     }
 
     render() {
@@ -136,7 +171,7 @@ class AudioSearch extends Component {
                                         this.state.record
                                         ? 
                                             <TouchableWithoutFeedback onPress={this.stopRecording} style={{ flex: 1 }}>
-                                                <Text style={styles.btnRed}>Стоп</Text>
+                                                <Text style={styles.btnStop}>Стоп</Text>
                                             </TouchableWithoutFeedback>
                                         :
                                             <TouchableWithoutFeedback onPress={this.togglePermission} style={{ flex: 1 }}>
@@ -170,6 +205,7 @@ class AudioSearch extends Component {
                                 onPress={() => {
                                     this.props.updateFile(null);
                                     soundObject.unloadAsync();
+                                    recording.stopAndUnloadAsync();
                                 }}
                                 style={{ flex: 0.1 }}
                             >
@@ -179,7 +215,7 @@ class AudioSearch extends Component {
                             </TouchableWithoutFeedback>
                         </View>
 
-                        <TouchableWithoutFeedback onPress={() => alert('hello')}>
+                        <TouchableWithoutFeedback onPress={this.sendAudio}>
                             <Text style={styles.btnBlue}>Надіслати</Text>
                         </TouchableWithoutFeedback>
                     </View>

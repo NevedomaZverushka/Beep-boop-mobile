@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Text, View, Image, ImageBackground, ScrollView, SafeAreaView } from 'react-native';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import { connect } from 'react-redux';
 
 import styles from './Styles/MainPageStyle'
 
@@ -23,13 +24,21 @@ const sliders = [
     }
 ]
 
-export default class MainPage extends Component {
+class MainPage extends Component {
     constructor(props) {
         super(props);
         this.state = {
             selectedIndex: 0,
+            visible: false,
         }
         this.setSelectedIndex = this.setSelectedIndex.bind(this);
+        this.hideInformation = this.hideInformation.bind(this);
+    }
+
+    componentDidMount() {
+        if (this.props.attempts.length) {
+            this.setState({ visible: true })
+        }
     }
 
     setSelectedIndex(e) {
@@ -37,12 +46,46 @@ export default class MainPage extends Component {
         const contentOffset = e.nativeEvent.contentOffset.x;
         this.setState({ selectedIndex: contentOffset / viewSize })
     }
+    hideInformation() {
+        this.setState({ visible: false })
+    }
 
     render() {
         return(
             <View style={{ flex: 1, backgroundColor: 'white' }}>
                 <ImageBackground source={require('../assets/background.png')} style={styles.container}>
                     <ScrollView style={{ flex: 1, flexDirection: 'column' }}>
+
+                        {
+                            this.props.attempts.length !== 0 || !this.state.visible
+                                ? null
+                                :
+                                    <View style={styles.attempts} >
+                                        <Text style={styles.attemptsTitle}>Поточна гра</Text>
+                                        <View style={{ flex: 1, flexDirection: 'row', marginTop: 10 }}>
+                                            <Text
+                                                style={{
+                                                    flex: 0.8,
+                                                    fontSize: 18,
+                                                    color: '#5a78ed',
+                                                    textAlignVertical:
+                                                    'center',
+                                                    fontWeight: 'bold'
+                                                }}
+                                            >
+                                                Залишилось спроб:
+                                            </Text>
+                                            <Text style={{ flex: 0.2, fontSize: 25, color: '#5a78ed' }}>
+                                                { 5 - this.props.attempts.length }
+                                            </Text>
+                                        </View>
+                                        <View style={{ position: 'absolute', zIndex: 1, right: 0, }}>
+                                            <TouchableWithoutFeedback onPress={this.hideInformation}>
+                                                <Text style={ styles.close }>&#10005;</Text>
+                                            </TouchableWithoutFeedback>
+                                        </View>
+                                    </View>
+                        }
 
                         <View style={{ marginTop: 25, marginBottom: 10 }}>
 
@@ -129,3 +172,11 @@ export default class MainPage extends Component {
         )
     }
 }
+
+function mapStateToProps(state) {
+    return {
+        attempts: state.attempts
+    }
+}
+
+export default connect(mapStateToProps)(MainPage)

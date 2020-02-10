@@ -7,6 +7,28 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '100%'
     },
+    attempts: {
+        margin: 20,
+        padding: 20,
+        backgroundColor: 'white',
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2, },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+    },
+    attemptsTitle: {
+        textAlign: 'center',
+        textTransform: 'uppercase',
+        color: '#ff6666',
+        fontWeight: 'bold',
+        fontSize: 18,
+    },
+    close: {
+        paddingRight: 10,
+        color: 'black',
+        fontSize: 25,
+    },
     circleDiv: {
         marginRight: 20,
         flex: 0.5,
@@ -32,10 +54,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         backgroundColor: 'white',
         shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
+        shadowOffset: { width: 0, height: 2, },
         shadowOpacity: 0.25,
         shadowRadius: 3.84,
         elevation: 5,
@@ -50,9 +69,6 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#5a78ed',
     },
-    sliderText: {
-        
-    },
     card: {
         backgroundColor: 'white',
         paddingTop: 30,
@@ -61,10 +77,7 @@ const styles = StyleSheet.create({
         paddingRight: 30,
         margin: 20,
         shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
+        shadowOffset: { width: 0, height: 2, },
         shadowOpacity: 0.25,
         shadowRadius: 3.84,
         elevation: 5,
@@ -87,7 +100,7 @@ const styles = StyleSheet.create({
         textTransform: 'uppercase'
     },
     title: {
-        color: '#ff6666',
+        color: '#5a78ed',
         fontWeight: 'bold',
         marginLeft: 20,
         fontSize: 18,

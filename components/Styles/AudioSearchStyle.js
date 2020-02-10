@@ -1,7 +1,7 @@
 import { StyleSheet, Dimensions } from 'react-native';
 
 const screenWidth = Math.round(Dimensions.get('window').width);
-const styles = StyleSheet.create({
+var styles = StyleSheet.create({
     container: {
         justifyContent: 'center',
         alignItems: 'center',
@@ -64,6 +64,18 @@ const styles = StyleSheet.create({
         borderColor: '#5a78ed',
         padding: 10,
     },
+    btnStop: {
+        textAlign: 'center',
+        fontWeight: 'bold',
+        fontSize: 18,
+        color: '#ff6666',
+        margin: 5,
+        borderWidth: 2,
+        borderColor: '#ff6666',
+        padding: 9,
+        textAlignVertical: 'center',
+        opacity: 1
+    }
 })
 
 export default styles
