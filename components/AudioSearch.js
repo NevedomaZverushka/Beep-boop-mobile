@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Image, TouchableWithoutFeedback, ScrollView, Dimensions, Animated } from 'react-native';
+import { Text, View, Image, TouchableWithoutFeedback, ScrollView } from 'react-native';
 import * as DocumentPicker from 'expo-document-picker';
 import { connect } from 'react-redux';
 import { Audio } from 'expo-av';
 import * as Permissions from 'expo-permissions';
 import * as FileSystem from 'expo-file-system';
+import AnimatedLoader from "react-native-animated-loader";
 
 import api from '../api'
 import styles from './Styles/AudioSearchStyle'
@@ -94,7 +95,7 @@ class AudioSearch extends Component {
                 this.props.updateFile(null);
             }
             else {
-                if (res["size"] > 10485760) {
+                if (res["size"] < 10485760) {
                     this.props.updateFile(res);
                     await soundObject.loadAsync(this.props.file);
                 }
@@ -135,6 +136,7 @@ class AudioSearch extends Component {
         var file = this.props.file
         var formData = new FormData();
         formData.append("file", file);
+        this.props.toggleSpinner();
         api.sendAudio(formData)
             .then((response) => {
                 if (response.status === 200 && response.data.status === "success") {
@@ -221,6 +223,14 @@ class AudioSearch extends Component {
                     </View>
 
                 </ScrollView>
+
+                <AnimatedLoader
+                    visible={this.props.spinner}
+                    overlayColor="rgba(255,255,255,0.75)"
+                    source={require('../Spinner.json')}
+                    animationStyle={styles.spinner}
+                    speed={1}
+                />
             </View>
         )
     }
@@ -229,12 +239,14 @@ class AudioSearch extends Component {
 function mapDispatchToProps(dispatch) {
     return {
         updateFile: (file) => dispatch({ type: 'UPDATE_FILE', file: file }),
+        toggleSpinner: () => dispatch({ type: 'TOGGLE_SPINNER' })
     }
 }
 
 function mapStateToProps(state) {
     return {
         file: state.file,
+        spinner: state.spinner,
     }
 }
 

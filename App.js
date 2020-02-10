@@ -24,6 +24,7 @@ const initState = {
   userWon: false,
   computerWon: false,
   attempts: getDataFromStorage() ? [] : getDataFromStorage(),
+  spinner: false
 }
 
 const reducer = (state = initState, action) => {
@@ -67,9 +68,15 @@ const reducer = (state = initState, action) => {
             computerWon: true
         }
     }
-      default: {
-          return state
-      }
+    case 'TOGGLE_SPINNER': {
+        return {
+            ...state,
+            spinner: !state.spinner
+        }
+    }
+    default: {
+        return state
+    }
   }
 }
 const store = createStore(reducer);

@@ -54,6 +54,10 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         borderColor: '#5a78ed',
         padding: 10,
+    },
+    spinner: {
+        width: 70,
+        height: 70,
     }
 })
 

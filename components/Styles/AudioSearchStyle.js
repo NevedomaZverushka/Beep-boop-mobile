@@ -75,6 +75,10 @@ var styles = StyleSheet.create({
         padding: 9,
         textAlignVertical: 'center',
         opacity: 1
+    },
+    spinner: {
+        width: 70,
+        height: 70,
     }
 })
 

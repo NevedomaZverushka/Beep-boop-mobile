@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Dimensions, TouchableWithoutFeedback, AsyncStorage } from 'react-native';
+import { Text, View, TouchableWithoutFeedback, AsyncStorage } from 'react-native';
 import { connect } from 'react-redux';
 import { Audio } from 'expo-av';
 //import TrackPlayer from 'react-native-track-player';

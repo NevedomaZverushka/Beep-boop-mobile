@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, TouchableWithoutFeedback } from 'react-native';
+import { Text, TouchableWithoutFeedback } from 'react-native';
 import { Header } from 'react-native-elements';
 
 import styles from './Styles/AppHeaderStyle';

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Image, ImageBackground, ScrollView, Dimensions, FlatList, SafeAreaView } from 'react-native';
+import { Text, View, Image, ImageBackground, ScrollView, FlatList, SafeAreaView } from 'react-native';
 
 import styles from './Styles/IntroductionStyle'
 
