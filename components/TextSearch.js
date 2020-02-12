@@ -19,6 +19,12 @@ class TextSearch extends Component {
         this.closePopUp = this.closePopUp.bind(this);
     }
 
+    componentDidMount() {
+        // if (this.props.userWon || this.props.computerWon) {
+        //     this.props.navigation.navigate('result');
+        // }
+    }
+
     closePopUp() {
         this.setState({ popUp: false })
     }
@@ -65,7 +71,7 @@ class TextSearch extends Component {
                 </KeyboardAvoidingView>
 
                 <Modal animationType="fade" transparent={true} visible={this.state.popUp}>
-                    <RecognitiomResponse close={this.closePopUp} />
+                    <RecognitiomResponse close={this.closePopUp} navigation={this.props.navigation} />
                 </Modal>
 
                 <AnimatedLoader
@@ -93,6 +99,8 @@ function mapStateToProps(state) {
         text: state.text,
         possibleSong: state.possibleSong,
         spinner: state.spinner,
+        userWon: state.userWon,
+        computerWon: state.computerWon
     }
 }
 

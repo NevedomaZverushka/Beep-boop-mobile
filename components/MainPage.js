@@ -36,7 +36,7 @@ class MainPage extends Component {
     }
 
     componentDidMount() {
-        if (this.props.attempts.length) {
+        if (this.props.attempts.length > 0) {
             this.setState({ visible: true })
         }
     }
@@ -51,13 +51,15 @@ class MainPage extends Component {
     }
 
     render() {
+        console.log(this.props.attempts.length)
+        console.log(this.state.visible)
         return(
             <View style={{ flex: 1, backgroundColor: 'white' }}>
                 <ImageBackground source={require('../assets/background.png')} style={styles.container}>
                     <ScrollView style={{ flex: 1, flexDirection: 'column' }}>
 
                         {
-                            this.props.attempts.length !== 0 || !this.state.visible
+                            !this.state.visible
                                 ? null
                                 :
                                     <View style={styles.attempts} >

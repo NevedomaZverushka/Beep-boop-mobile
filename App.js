@@ -11,9 +11,10 @@ import Introduction from './components/Introduction';
 import History from './components/History';
 import AudioSearch from './components/AudioSearch';
 import TextSearch from './components/TextSearch';
+import Result from './components/Result';
 
 async function getDataFromStorage() {
-  const storage = await AsyncStorage.getItem('attempts');
+  const storage = JSON.parse(await AsyncStorage.getItem('attempts'));
   return storage;
 }
 
@@ -54,7 +55,7 @@ const reducer = (state = initState, action) => {
             ...state,
             attempts: temp,
             possibleSong: null,
-            userWon: temp.length >= 5 ? true : false,
+            userWon: temp.length >= 4 ? true : false
         }
     }
     case 'RIGHT_ANSWER': {
@@ -73,6 +74,14 @@ const reducer = (state = initState, action) => {
             ...state,
             spinner: !state.spinner
         }
+    }
+    case 'FINISH_GAME': {
+      return {
+          ...state,
+          attempts: [],
+          computerWon: false,
+          userWon: false
+      }
     }
     default: {
         return state
@@ -110,6 +119,12 @@ const RootStack = createStackNavigator({
     screen: TextSearch,
     navigationOptions: {
       header: (props) => <AppHeader {...{ title: 'Пошук за текстом', navigation: props.navigation, btnBack: 'home', cards: true }} />,
+    }
+  },
+  result: {
+    screen: Result,
+    navigationOptions: {
+      header: (props) => <AppHeader {...{ title: 'Результати гри', navigation: props.navigation, btnBack: 'home', cards: false }} />,
     }
   }
 });

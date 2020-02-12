@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text, View, Image, TouchableOpacity, ScrollView } from 'react-native';
+import { Text, View, Image, TouchableOpacity, ScrollView, Modal } from 'react-native';
 import * as DocumentPicker from 'expo-document-picker';
 import { connect } from 'react-redux';
 import { Audio } from 'expo-av';
@@ -10,9 +10,10 @@ import Toast from 'react-native-simple-toast';
 
 import api from '../api'
 import styles from './Styles/AudioSearchStyle'
+import RecognitionResponse from './RecognitionResponse';
 
 var soundObject = new Audio.Sound();
-const recording = new Audio.Recording();
+var recording = new Audio.Recording();
 
 class AudioSearch extends Component {
     constructor(props) {
@@ -30,22 +31,29 @@ class AudioSearch extends Component {
         this.onPause = this.onPause.bind(this);
         this.onPlay = this.onPlay.bind(this);
         this.sendAudio = this.sendAudio.bind(this);
+        this.closePopUp = this.closePopUp.bind(this);
     }
 
     async componentWillUnmount() {
         this.props.updateFile(null);
-        await soundObject.pauseAsync();
-        await soundObject.unloadAsync();
-        await recording.stopAndUnloadAsync();
+        if ((await soundObject.getStatusAsync()).isLoaded) {
+            await soundObject.stopAsync();
+            await soundObject.unloadAsync();
+        }
     }
 
     async stopRecording() {
         try {
             this.setState({ record: false })
-            await recording.pauseAsync();
+            if ((await recording.getStatusAsync()).isRecording) {
+                await recording.stopAndUnloadAsync();
+            }
             const info = await FileSystem.getInfoAsync(recording.getURI());
-            await recording.stopAndUnloadAsync();
             this.props.updateFile(info);
+            if ((await soundObject.getStatusAsync()).isLoaded) {
+                await soundObject.stopAsync();
+                await soundObject.unloadAsync();
+            }
             await soundObject.loadAsync(this.props.file);
         }
         catch (error) {
@@ -55,6 +63,7 @@ class AudioSearch extends Component {
     async startRecording() {
         try {
             this.setState({ record: true })
+            recording = new Audio.Recording();
             await recording.prepareToRecordAsync(Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY);
             await recording.startAsync();
             setTimeout(function() {
@@ -130,7 +139,7 @@ class AudioSearch extends Component {
         }
         var file = this.props.file
         var formData = new FormData();
-        formData.append("file", file);
+        formData.append("file", { uri: file.uri, name: "record.mp3", type: 'multipart/form-data' });
         this.props.toggleSpinner();
         api.sendAudio(formData)
             .then((response) => {
@@ -138,11 +147,16 @@ class AudioSearch extends Component {
                     let generalized = api.generalizeResponse(response.data)
                     this.props.updateSong(generalized.result && generalized.result.length > 0 ? generalized.result[0] : false)
                     this.props.toggleSpinner();
+                    this.setState({ popUp: true })
                 }
             })
     }
+    closePopUp() {
+        this.setState({ popUp: false })
+    }
 
     render() {
+        console.log(this.props.file)
         return (
             <View style={{ flex: 1, backgroundColor: 'white' }}>
                 <ScrollView style={{ flex: 1, flexDirection: 'column' }}>
@@ -184,25 +198,23 @@ class AudioSearch extends Component {
                                 this.state.playing
                                 ?
                                     <TouchableOpacity onPress={this.onPause} style={{ flex: 0.1 }}>
-                                        <Text style={{ padding: 1, color: '#ff6666', fontSize: 20, fontWeight: 'bold', textAlignVertical: 'center' }}>
-                                        &#124;  &#124;
-                                        </Text>
+                                        <Image source={require('../assets/pause.png')} style={{ width: 10, height: 10 }} />
                                     </TouchableOpacity>
                                 :
                                     <TouchableOpacity onPress={this.onPlay} style={{ flex: 0.1 }}>
-                                        <Text style={{ color: '#ff6666', fontSize: 39, textAlignVertical: 'center' }}>
-                                            &#9655;
-                                        </Text>
+                                        <Image source={require('../assets/play.png')} style={{ width: 10, height: 10 }} />
                                     </TouchableOpacity>
                             }
                             <Text style={{ fontSize: 20, textAlignVertical: 'center', flex: 0.8, textAlign: 'center' }}>
                                 { this.props.file ? this.props.file.name ? this.props.file.name : "Голосовий запис" : null }
                             </Text>
                             <TouchableOpacity
-                                onPress={() => {
+                                onPress={async () => {
                                     this.props.updateFile(null);
-                                    soundObject.unloadAsync();
-                                    recording.stopAndUnloadAsync();
+                                    if ((await soundObject.getStatusAsync()).isLoaded) {
+                                        await recording.stopAndUnloadAsync();
+                                        await soundObject.unloadAsync();
+                                    }
                                 }}
                                 style={{ flex: 0.1 }}
                             >
@@ -219,6 +231,10 @@ class AudioSearch extends Component {
 
                 </ScrollView>
 
+                <Modal animationType="fade" transparent={true} visible={this.state.popUp}>
+                    <RecognitionResponse close={this.closePopUp} navigation={this.props.navigation} />
+                </Modal>
+
                 <AnimatedLoader
                     visible={this.props.spinner}
                     overlayColor="rgba(255,255,255,0.75)"
@@ -234,6 +250,7 @@ class AudioSearch extends Component {
 function mapDispatchToProps(dispatch) {
     return {
         updateFile: (file) => dispatch({ type: 'UPDATE_FILE', file: file }),
+        updateSong: (song) => dispatch({ type: 'UPDATE_SONG', song: song }),
         toggleSpinner: () => dispatch({ type: 'TOGGLE_SPINNER' })
     }
 }

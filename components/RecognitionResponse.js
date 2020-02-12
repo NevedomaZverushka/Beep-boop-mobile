@@ -1,17 +1,14 @@
 import React, { Component } from 'react';
 import { Text, View, TouchableWithoutFeedback, AsyncStorage } from 'react-native';
 import { connect } from 'react-redux';
-import { Audio } from 'expo-av';
 //import TrackPlayer from 'react-native-track-player';
 
 import styles from './Styles/RecognitionResponseStyle'
 
-var soundObject = new Audio.Sound();
-
 class RecognitiomResponse extends Component {
     constructor(props) {
         super(props);
-        this.state ={
+        this.state = {
             playing: false,
         }
 
@@ -20,18 +17,19 @@ class RecognitiomResponse extends Component {
     }
 
     async componentDidMount() {
-        if (this.props.possibleSong) {
-            await soundObject.loadAsync({uri: this.props.possibleSong.media[0].url, overrideFileExtensionAndroid: "mp3"}, downloadFirst=true);
-        }
         try {
-            const storage = await AsyncStorage.getItem('attempts');
+            var storage = JSON.parse(await AsyncStorage.getItem('attempts'));
             if (storage) {
-                var bufStorage = storage;
-                bufStorage.push(this.props.possibleSong === false ? null : this.props.possibleSong);
-                storage.setItem('attempts', bufStorage);
+                storage.push(this.props.possibleSong === false ? null : this.props.possibleSong);
+                await AsyncStorage.removeItem('attempts')
+                await AsyncStorage.setItem('attempts', JSON.stringify(storage));
             }
             else {
-                storage.setItem('attempts', [this.props.possibleSong === false ? null : this.props.possibleSong])
+                await AsyncStorage.setItem(
+                    'attempts',
+                    JSON.stringify([this.props.possibleSong === false ? null : this.props.possibleSong])
+                )
+                console.log(storage)
             }
         }
         catch (error) {
@@ -39,8 +37,8 @@ class RecognitiomResponse extends Component {
         }
     }
     async componentWillUnmount() {
-        await soundObject.pauseAsync();
-        await soundObject.unloadAsync();
+        // await soundObject.pauseAsync();
+        // await soundObject.unloadAsync();
     }
 
     async onPlay() {
@@ -71,7 +69,16 @@ class RecognitiomResponse extends Component {
                                 <Text style={styles.paragraph}>
                                     Здається, додаток не зміг розпізнати пісню. Спробуйте покращити якість запису або поточнити текст пісні.
                                 </Text>
-                                <TouchableWithoutFeedback onPress={this.props.close} style={{ flex: 0.2 }}>
+                                <TouchableWithoutFeedback
+                                    onPress={() => {
+                                        this.props.wrongAnswer(null);
+                                        if (this.props.userWon || this.props.computerWon) {
+                                            this.props.navigation.navigate('result');
+                                        }
+                                        this.props.close();
+                                    }}
+                                    style={{ flex: 0.2 }}
+                                >
                                     <Text style={styles.btnRed}>Продовжити гру</Text>
                                 </TouchableWithoutFeedback>
                             </>
@@ -100,28 +107,33 @@ class RecognitiomResponse extends Component {
                                                 </Text>
                                             </TouchableWithoutFeedback>
                                     }
-                                    <Text style={{ flex: 0.9, textAlignVertical: 'center', fontSize: 18, margin: 5 }}>
-                                        <Text style={styles.author}>
-                                            {
-                                                this.props.possibleSong.artist >= 10
-                                                    ? ((this.props.possibleSong.artist).substring(0, 90 - 3)) + '... - '
-                                                    : this.props.possibleSong.artist + ' - '
-                                            }
+                                    { this.props.possibleSong &&
+                                        <Text style={{ flex: 0.9, textAlignVertical: 'center', fontSize: 18, margin: 5 }}>
+                                            <Text style={styles.author}>
+                                                { this.props.possibleSong.artist ?
+                                                    this.props.possibleSong.artist.length >= 10
+                                                        ? ((this.props.possibleSong.artist).substring(0, 90 - 3)) + '... - '
+                                                        : this.props.possibleSong.artist + ' - '
+                                                    : 'Невідомий артист'
+                                                }
+                                            </Text>
+                                            <Text style={styles.soundName}>
+                                                { this.props.possibleSong.title ?
+                                                    this.props.possibleSong.title.length >= 10
+                                                        ? ((this.props.possibleSong.title).substring(0, 90 - 3)) + '...'
+                                                        : this.props.possibleSong.title
+                                                    : 'Невідома пісня'
+                                                }
+                                            </Text>
                                         </Text>
-                                        <Text style={styles.soundName}>
-                                        {
-                                                this.props.possibleSong.title >= 10
-                                                    ? ((this.props.possibleSong.title).substring(0, 90 - 3)) + '...'
-                                                    : this.props.possibleSong.title
-                                            }
-                                        </Text>
-                                    </Text>
+                                    }
                                 </View>
                                 <View style={{ flex: 1, flexDirection: 'row', padding: 15 }}>
                                     <TouchableWithoutFeedback
                                         onPress={() => {
-                                            this.props.rightAnswer();
+                                            this.props.rightAnswer(this.props.possibleSong);
                                             this.props.close();
+                                            this.props.navigation.navigate('result');
                                         }}
                                         style={{ flex: 0.5 }}
                                     >
@@ -129,8 +141,11 @@ class RecognitiomResponse extends Component {
                                     </TouchableWithoutFeedback>
                                     <TouchableWithoutFeedback
                                         onPress={() => {
-                                            this.props.wrongAnswer();
+                                            this.props.wrongAnswer(this.props.possibleSong);
                                             this.props.close();
+                                            if (this.props.userWon || this.props.computerWon) {
+                                                this.props.navigation.navigate('result');
+                                            }
                                         }}
                                         style={{ flex: 0.5 }}
                                     >
@@ -154,7 +169,10 @@ function mapDispatchToProps(dispatch) {
 
 function mapStateToProps(state) {
     return {
-        possibleSong: state.possibleSong
+        attempts: state.attempts,
+        possibleSong: state.possibleSong,
+        userWon: state.userWon,
+        computerWon: state.computerWon,
     }
 }
 
