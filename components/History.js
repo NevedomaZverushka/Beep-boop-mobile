@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text, View, Image, TouchableOpacity, TouchableWithoutFeedback, ImageBackground, ScrollView, AsyncStorage } from 'react-native';
+import { Text, View, Image, TouchableOpacity, ImageBackground, ScrollView, AsyncStorage } from 'react-native';
 
 import styles from './Styles/HistoryStyle'
 
@@ -22,6 +22,14 @@ import styles from './Styles/HistoryStyle'
         var bufPlayList = []
         this.state.storageHistory.forEach(element => { bufPlayList.push(false) })
         this.setState({ playing: bufPlayList })
+    }
+    componentWillUnmount() {
+        var bufPlayList = [];
+        this.state.playing.forEach( element => {
+            bufPlayList.push(false);
+            this.onPause();
+        })
+        this.setState({ playing: playList });
     }
 
     async onPlay(index) {
@@ -71,31 +79,18 @@ import styles from './Styles/HistoryStyle'
                                 {index + 1}.
                             </Text>
                             {
-                                this.state.playing[index]
-                                ?
-                                    <TouchableWithoutFeedback onPress={this.onPause} style={{ flex: 0.3 }}>
-                                        <Text style={{
-                                                color: '#ff6666',
-                                                fontSize: 20,
-                                                fontWeight: 'bold',
-                                                textAlignVertical: 'left',
-                                                lineHeight: 60,
-                                                margin: 10
-                                        }}>
-                                            &#124;  &#124;
-                                        </Text>
-                                    </TouchableWithoutFeedback>
+                                this.state.playing[index] ?
+                                    <TouchableOpacity onPress={this.onPause}
+                                        style={{ flex: 0.1, justifyContent: 'center', alignItems: 'center', }}
+                                    >
+                                        <Image source={require('../assets/pause.png')} style={{ width: 20, height: 20 }} />
+                                    </TouchableOpacity>
                                 :
-                                    <TouchableWithoutFeedback onPress={() => this.onPlay(index)} style={{ flex: 0.3 }}>
-                                        <Text style={{
-                                                color: '#ff6666',
-                                                fontSize: 45,
-                                                textAlignVertical: 'center',
-                                                lineHeight: 60
-                                        }}>
-                                            &#9655;
-                                        </Text>
-                                    </TouchableWithoutFeedback>
+                                    <TouchableOpacity onPress={() => this.onPlay(index)}
+                                        style={{ flex: 0.1,justifyContent: 'center', alignItems: 'center', }}
+                                    >
+                                        <Image source={require('../assets/play.png')} style={{ width: 20, height: 20 }} />
+                                    </TouchableOpacity>
                             }
                             <Text style={{ flex: 0.8, flexDirection: 'row', textAlignVertical: 'center', fontSize: 18 }}>
                                 <Text style={styles.author}>
@@ -118,8 +113,8 @@ import styles from './Styles/HistoryStyle'
                     return (
                         <View style={{ flex: 1, flexDirection: 'row', marginTop: 15, marginBottom: 25, }} key={index}>
                             <Text style={{
-                                flex: 0.3,
-                                textAlign: 'center',
+                                flex: 0.1,
+                                textAlign: 'left',
                                 fontSize: 18,
                                 color: 'black',
                                 fontWeight: 'bold',
@@ -127,7 +122,7 @@ import styles from './Styles/HistoryStyle'
                             }}>
                                 {index + 1}.
                             </Text>
-                            <Text style={{ flex: 0.7}}>Здається, у цій грі комп'ютер програв!</Text>
+                            <Text style={{ flex: 0.9, fontSize: 18}}>Здається, у цій грі комп'ютер програв!</Text>
                         </View>
                     )
                 }

@@ -48,6 +48,17 @@ const styles = StyleSheet.create({
         fontSize: 18,
         margin: 5,
     },
+    btnRed: {
+        textAlign: 'center',
+        fontWeight: 'bold',
+        fontSize: 18,
+        color: '#ff6666',
+        margin: 5,
+        borderWidth: 2,
+        borderColor: '#ff6666',
+        padding: 9,
+        textAlignVertical: 'center',
+    },
 })
 
 export default styles

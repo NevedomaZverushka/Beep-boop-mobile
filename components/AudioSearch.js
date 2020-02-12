@@ -150,13 +150,15 @@ class AudioSearch extends Component {
                     this.setState({ popUp: true })
                 }
             })
+            .catch((error) => {
+                Toast.show('Здається, сталася помилка. Спробуйте ще раз!', Toast.LONG);
+            });
     }
     closePopUp() {
         this.setState({ popUp: false })
     }
 
     render() {
-        console.log(this.props.file)
         return (
             <View style={{ flex: 1, backgroundColor: 'white' }}>
                 <ScrollView style={{ flex: 1, flexDirection: 'column' }}>
@@ -195,15 +197,20 @@ class AudioSearch extends Component {
 
                         <View style={[this.props.file === null && { width: 0, height: 0 }, { flex: 1, flexDirection: 'row' }]} >
                             {
-                                this.state.playing
-                                ?
-                                    <TouchableOpacity onPress={this.onPause} style={{ flex: 0.1 }}>
-                                        <Image source={require('../assets/pause.png')} style={{ width: 10, height: 10 }} />
-                                    </TouchableOpacity>
-                                :
-                                    <TouchableOpacity onPress={this.onPlay} style={{ flex: 0.1 }}>
-                                        <Image source={require('../assets/play.png')} style={{ width: 10, height: 10 }} />
-                                    </TouchableOpacity>
+                                this.props.file !== null ?
+                                    this.state.playing ? 
+                                            <TouchableOpacity onPress={this.onPause}
+                                                style={{ flex: 0.1, justifyContent: 'center', alignItems: 'center', }}
+                                            >
+                                                <Image source={require('../assets/pause.png')} style={{ width: 20, height: 20 }} />
+                                            </TouchableOpacity>
+                                        :
+                                            <TouchableOpacity onPress={this.onPlay}
+                                                style={{ flex: 0.1,justifyContent: 'center', alignItems: 'center', }}
+                                            >
+                                                <Image source={require('../assets/play.png')} style={{ width: 20, height: 20 }} />
+                                            </TouchableOpacity>
+                                :  null
                             }
                             <Text style={{ fontSize: 20, textAlignVertical: 'center', flex: 0.8, textAlign: 'center' }}>
                                 { this.props.file ? this.props.file.name ? this.props.file.name : "Голосовий запис" : null }
@@ -218,7 +225,7 @@ class AudioSearch extends Component {
                                 }}
                                 style={{ flex: 0.1 }}
                             >
-                                <Text style={{ color: '#ff6666', fontSize: 40, textAlignVertical: 'center' }}>
+                                <Text style={{ color: '#ff6666', fontSize: 30, textAlignVertical: 'center' }}>
                                     &#10005;
                                 </Text>
                             </TouchableOpacity>
@@ -263,6 +270,3 @@ function mapStateToProps(state) {
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(AudioSearch)
-
-
-// TODO blicking

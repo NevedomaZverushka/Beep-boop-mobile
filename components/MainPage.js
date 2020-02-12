@@ -35,9 +35,11 @@ class MainPage extends Component {
         this.hideInformation = this.hideInformation.bind(this);
     }
 
-    componentDidMount() {
-        if (this.props.attempts.length > 0) {
-            this.setState({ visible: true })
+    componentDidUpdate(previousProps) {
+        if (previousProps.attempts !== this.props.attempts) {
+            if (this.props.attempts.length > 0) {
+                this.setState({ visible: true })
+            } 
         }
     }
 
@@ -51,8 +53,6 @@ class MainPage extends Component {
     }
 
     render() {
-        console.log(this.props.attempts.length)
-        console.log(this.state.visible)
         return(
             <View style={{ flex: 1, backgroundColor: 'white' }}>
                 <ImageBackground source={require('../assets/background.png')} style={styles.container}>

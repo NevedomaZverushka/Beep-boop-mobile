@@ -1,18 +1,8 @@
 import React, { Component } from 'react';
-import { Text, View, Image, TouchableWithoutFeedback, ImageBackground, ScrollView, AsyncStorage } from 'react-native';
+import { Text, View, Image, TouchableOpacity, ImageBackground, ScrollView, AsyncStorage } from 'react-native';
 import { connect } from 'react-redux';
 
 import styles from './Styles/ResultStyle'
-
-function unique(arr) {
-    let res = [];
-    arr.forEach(element => {
-        if (!res.includes(element)) {
-            res.push(element);
-        }
-    })
-    return res;
-}
 
 var backgrounds = [
     require('../assets/background_result_blue.png'),
@@ -41,7 +31,7 @@ class Result extends Component {
         var storageAttempts = JSON.parse(await AsyncStorage.getItem('attempts'));
         var storageHistory = JSON.parse(await AsyncStorage.getItem('history'));
 
-        unique(storageAttempts).forEach(song => {
+        storageAttempts.forEach(song => {
             if (song) {
                 this.state.playing.push(false);
             }
@@ -90,9 +80,16 @@ class Result extends Component {
     }
     componentWillUnmount() {
         this.props.finishGame();
+
+        var bufPlayList = [];
+        this.state.playing.forEach( element => {
+            bufPlayList.push(false);
+            this.onPause();
+        })
+        this.setState({ playing: playList });
     }
 
-    async onPlay() {
+    async onPlay(pos) {
         // TrackPlayer.setupPlayer().then(async () => {
         //     await TrackPlayer.add({
         //         url: this.props.possibleSong.media[0].url,
@@ -101,17 +98,28 @@ class Result extends Component {
         //     });
         //     TrackPlayer.play();
         // });
+        var bufPlayList = []
+        this.state.playing.forEach((element, pos) => {
+            if (pos === index) {
+                bufPlayList.push(true)
+            }
+            else {
+                bufPlayList.push(false)
+            }
+        });
+        this.setState({ playing: bufPlayList })
     }
     async onPause() {
         // TrackPlayer.setupPlayer().then(async () => {
         //     TrackPlayer.pause();
         // });
+        var bufPlayList = []
+        this.state.playing.forEach(element => { bufPlayList.push(false) });
+        this.setState({ playing: bufPlayList })
     }
 
     render() {
         var playList = this.props.attempts;
-        playList = unique(playList);
-
         var sounds = null;
         if (!this.props.attempts.every((sound) => { return sound == null })) {
             sounds = playList.map((sound, index) => {
@@ -119,25 +127,18 @@ class Result extends Component {
                     return (
                         <View style={{ flex: 1, flexDirection: 'row', marginTop: 15, marginBottom: 25, }} key={index}>
                             {
-                                this.state.playing[index]
-                                ?
-                                    <TouchableWithoutFeedback onPress={this.onPause} style={{ flex: 0.2 }}>
-                                        <Text style={{
-                                                padding: 1,
-                                                color: '#ff6666',
-                                                fontSize: 26,
-                                                fontWeight: 'bold',
-                                                textAlignVertical: 'center'
-                                        }}>
-                                            &#124;  &#124;
-                                        </Text>
-                                    </TouchableWithoutFeedback>
+                                this.state.playing[index] ?
+                                    <TouchableOpacity onPress={this.onPause}
+                                        style={{ flex: 0.1, justifyContent: 'center', alignItems: 'center', }}
+                                    >
+                                        <Image source={require('../assets/pause.png')} style={{ width: 20, height: 20 }} />
+                                    </TouchableOpacity>
                                 :
-                                    <TouchableWithoutFeedback onPress={this.onPlay} style={{ flex: 0.1 }}>
-                                        <Text style={{ color: '#ff6666', fontSize: 45, textAlignVertical: 'center' }}>
-                                            &#9655;
-                                        </Text>
-                                    </TouchableWithoutFeedback>
+                                    <TouchableOpacity onPress={() => this.onPlay(index)}
+                                        style={{ flex: 0.1,justifyContent: 'center', alignItems: 'center', }}
+                                    >
+                                        <Image source={require('../assets/play.png')} style={{ width: 20, height: 20 }} />
+                                    </TouchableOpacity>
                             }
                             <Text style={{ flex: 0.8, flexDirection: 'row', textAlignVertical: 'center', fontSize: 18 }}>
                                 <Text style={styles.author}>
@@ -182,7 +183,15 @@ class Result extends Component {
                                 <Text style={[styles.scoreSpan, { flex: 0.2 }]}>:</Text>
                                 <Text style={[styles.score, { textAlign: 'left', flex: 0.4 }]}>{this.state.computerScore}</Text>
                             </View>
+
                             {sounds}
+
+                            <TouchableOpacity onPress={() => {
+                                this.props.finishGame();
+                                this.props.navigation.navigate('home');
+                            }}>
+                                <Text style={styles.btnRed}>Завершити гру</Text>
+                            </TouchableOpacity>
                         </View>
 
                     </ScrollView>

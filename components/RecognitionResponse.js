@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text, View, TouchableWithoutFeedback, AsyncStorage } from 'react-native';
+import { Text, View, TouchableOpacity, AsyncStorage, Image } from 'react-native';
 import { connect } from 'react-redux';
 //import TrackPlayer from 'react-native-track-player';
 
@@ -29,7 +29,6 @@ class RecognitiomResponse extends Component {
                     'attempts',
                     JSON.stringify([this.props.possibleSong === false ? null : this.props.possibleSong])
                 )
-                console.log(storage)
             }
         }
         catch (error) {
@@ -39,6 +38,7 @@ class RecognitiomResponse extends Component {
     async componentWillUnmount() {
         // await soundObject.pauseAsync();
         // await soundObject.unloadAsync();
+        this.setState({ playing: false })
     }
 
     async onPlay() {
@@ -50,11 +50,13 @@ class RecognitiomResponse extends Component {
         //     });
         //     TrackPlayer.play();
         // });
+        this.setState({ playing: true })
     }
     async onPause() {
         // TrackPlayer.setupPlayer().then(async () => {
         //     TrackPlayer.pause();
         // });
+        this.setState({ playing: false })
     }
 
     render() {
@@ -69,7 +71,7 @@ class RecognitiomResponse extends Component {
                                 <Text style={styles.paragraph}>
                                     Здається, додаток не зміг розпізнати пісню. Спробуйте покращити якість запису або поточнити текст пісні.
                                 </Text>
-                                <TouchableWithoutFeedback
+                                <TouchableOpacity
                                     onPress={() => {
                                         this.props.wrongAnswer(null);
                                         if (this.props.userWon || this.props.computerWon) {
@@ -80,32 +82,25 @@ class RecognitiomResponse extends Component {
                                     style={{ flex: 0.2 }}
                                 >
                                     <Text style={styles.btnRed}>Продовжити гру</Text>
-                                </TouchableWithoutFeedback>
+                                </TouchableOpacity>
                             </>
                         :
                             <>
                                 <Text style={styles.title}>Ми знайшли!</Text>
                                 <View style={{ flex: 1, flexDirection: 'row', marginTop: 15, marginBottom: 25, }}>
                                     {
-                                        this.state.playing
-                                        ?
-                                            <TouchableWithoutFeedback onPress={this.onPause} style={{ flex: 0.1 }}>
-                                                <Text style={{
-                                                        padding: 1,
-                                                        color: '#ff6666',
-                                                        fontSize: 26,
-                                                        fontWeight: 'bold',
-                                                        textAlignVertical: 'center'
-                                                }}>
-                                                    &#124;  &#124;
-                                                </Text>
-                                            </TouchableWithoutFeedback>
+                                        this.state.playing ?
+                                            <TouchableOpacity onPress={this.onPause}
+                                                style={{ flex: 0.1, justifyContent: 'center', alignItems: 'center', }}
+                                            >
+                                                <Image source={require('../assets/pause.png')} style={{ width: 20, height: 20 }} />
+                                            </TouchableOpacity>
                                         :
-                                            <TouchableWithoutFeedback onPress={this.onPlay} style={{ flex: 0.1 }}>
-                                                <Text style={{ color: '#ff6666', fontSize: 45, textAlignVertical: 'center' }}>
-                                                    &#9655;
-                                                </Text>
-                                            </TouchableWithoutFeedback>
+                                            <TouchableOpacity onPress={this.onPlay}
+                                                style={{ flex: 0.1,justifyContent: 'center', alignItems: 'center', }}
+                                            >
+                                                <Image source={require('../assets/play.png')} style={{ width: 20, height: 20 }} />
+                                            </TouchableOpacity>
                                     }
                                     { this.props.possibleSong &&
                                         <Text style={{ flex: 0.9, textAlignVertical: 'center', fontSize: 18, margin: 5 }}>
@@ -129,7 +124,7 @@ class RecognitiomResponse extends Component {
                                     }
                                 </View>
                                 <View style={{ flex: 1, flexDirection: 'row', padding: 15 }}>
-                                    <TouchableWithoutFeedback
+                                    <TouchableOpacity
                                         onPress={() => {
                                             this.props.rightAnswer(this.props.possibleSong);
                                             this.props.close();
@@ -138,8 +133,8 @@ class RecognitiomResponse extends Component {
                                         style={{ flex: 0.5 }}
                                     >
                                         <Text style={styles.btnRed}>Це воно!</Text>
-                                    </TouchableWithoutFeedback>
-                                    <TouchableWithoutFeedback
+                                    </TouchableOpacity>
+                                    <TouchableOpacity
                                         onPress={() => {
                                             this.props.wrongAnswer(this.props.possibleSong);
                                             this.props.close();
@@ -150,7 +145,7 @@ class RecognitiomResponse extends Component {
                                         style={{ flex: 0.5 }}
                                     >
                                         <Text style={styles.btnRed}>Це не воно!</Text>
-                                    </TouchableWithoutFeedback>
+                                    </TouchableOpacity>
                                 </View>
                             </>
                     }
